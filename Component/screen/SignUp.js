@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Image, StyleSheet } from 'react-native';
-
+import TextField from '@mui/material/TextField';
 
 
 function SignUp() {
@@ -10,6 +10,10 @@ function SignUp() {
         source={require('../assets/img/Logo.png')}
         style={[styles.image, { tintColor: 'white' }]}
       />
+
+      <View>
+      <TextField id="outlined-basic" label="Outlined" variant="outlined" />
+      </View>
     </View>
   );
 }
