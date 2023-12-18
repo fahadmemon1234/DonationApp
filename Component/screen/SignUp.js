@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Image, StyleSheet } from 'react-native';
 
+
+
 function SignUp() {
   return (
     <View style={styles.container}>
