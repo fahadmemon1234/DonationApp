@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Image, Animated, Easing } from 'react-native';
 
-function Splash() {
+const Splash = ({ navigation }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -13,15 +13,31 @@ function Splash() {
     }).start();
   }, [fadeAnim]);
 
+
+  React.useEffect(()=>{
+    setTimeout(()=>{
+        navigation.replace("SignUp")
+    },2000)
+},[])
+
   return (
     <View style={styles.container}>
       <Animated.Image
         source={require('../assets/img/Logo.png')}
         style={[styles.image, { tintColor: 'white', opacity: fadeAnim }]}
       />
+
+      <Animated.Text
+        style={[
+          styles.text,
+          { fontWeight: '600', fontSize: 40, color: 'white', opacity: fadeAnim },
+        ]}
+      >
+        Donation App
+      </Animated.Text>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -33,6 +49,13 @@ const styles = StyleSheet.create({
   image: {
     width: 310, // Adjust the width as needed
     height: 350, // Adjust the height as needed
+  },
+  text: {
+    textAlign: 'center',
+    alignSelf: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: -25,
   },
 });
 
