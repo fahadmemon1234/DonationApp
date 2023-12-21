@@ -12,6 +12,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import auth from '@react-native-firebase/auth';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
 
 function SignUp() {
   const [email, setEmail] = useState('');
@@ -19,25 +20,25 @@ function SignUp() {
   const [phoneNo, setPhoneNo] = useState('');
   const [gender, setGender] = useState('male');
 
-
-
   const [showpassword, setshowpassword] = useState(true);
 
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarText, setSnackbarText] = useState('');
   const [snackbarBackgroundColor, setSnackbarBackgroundColor] = useState('');
 
-
   const handleSignUp = async () => {
     // ... Your existing code ...
 
-    if (email === "" || password === "" || phoneNo === "" || gender === "") {
+    if (email === '' || password === '' || phoneNo === '' || gender === '') {
       setSnackbarText('Please fill in all fields');
       setSnackbarVisible(true);
       setSnackbarBackgroundColor('red');
-    }else {
+    } else {
       try {
-        const userCredential = await auth().createUserWithEmailAndPassword(email, password);
+        const userCredential = await auth().createUserWithEmailAndPassword(
+          email,
+          password,
+        );
         console.log(userCredential.user.uid);
 
         setSnackbarText('Sign up successful!');
@@ -48,18 +49,55 @@ function SignUp() {
         setPassword('');
         setPhoneNo('');
       } catch (error) {
-        if (error.code === "auth/email-already-in-use") {
+        if (error.code === 'auth/email-already-in-use') {
           setSnackbarText('Email Already Registered');
-        setSnackbarVisible(true);
-        setSnackbarBackgroundColor('red');
+          setSnackbarVisible(true);
+          setSnackbarBackgroundColor('red');
         }
       }
     }
   };
 
-
   const onDismissSnackbar = () => {
     setSnackbarVisible(false);
+  };
+
+  // Google SignIn
+
+  async function signInWithGoogle() {
+    googleSigninFunc().then(data => {
+      console.log('user data=>', data);
+    });
+  }
+
+  const googleSigninFunc = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      GoogleSignin.configure({
+        webClientId:
+          '68252012065-op4h17rtg1r7p33u41afth73ojl3huhu.apps.googleusercontent.com',
+        offlineAccess: true,
+        hostedDomain: '',
+        forceCodeForRefreshToken: true,
+        accountName: '',
+      });
+
+      const userInfo = await GoogleSignin.signIn();
+      const {idToken} = await GoogleSignin.signIn();
+
+      const googleCredentials = auth.GoogleAuthProvider.credential(idToken);
+      await auth().signInWithCredential(googleCredentials);
+
+      setSnackbarText('Google SignIn successfully!');
+      setSnackbarVisible(true);
+      setSnackbarBackgroundColor('green');
+      // await navigation.navigate('Home');
+      // await navigation.navigate("MyDrawer")
+      // await navigation.navigate('BottomNav');
+      return userInfo;
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
@@ -69,7 +107,7 @@ function SignUp() {
         style={[styles.image]}
       />
 
-      <View style={{alignItems: 'center'}}>
+      <View style={{alignItems: 'center',marginTop:-20}}>
         <Text style={{fontSize: 30, fontWeight: 600, color: 'black'}}>
           Welcome!
         </Text>
@@ -180,7 +218,9 @@ function SignUp() {
             alignItems: 'center',
           }}>
           <View style={styles.iconContainer}>
-            <TouchableOpacity style={styles.icon}>
+            <TouchableOpacity
+              style={styles.icon}
+              onPress={() => signInWithGoogle()}>
               <AntDesign name="google" size={30} color="darkred" />
             </TouchableOpacity>
           </View>
@@ -199,19 +239,18 @@ function SignUp() {
         </View>
 
         <Snackbar
-  visible={snackbarVisible}
-  onDismiss={onDismissSnackbar}
-  action={{
-    label: 'OK',
-    onPress: () => {
-      // Do something when OK is pressed
-    },
-    textColor: 'white', // Set the text color to white
-  }}
-  style={[styles.snackbar, { backgroundColor: snackbarBackgroundColor }]}
->
-  {snackbarText}
-</Snackbar>
+          visible={snackbarVisible}
+          onDismiss={onDismissSnackbar}
+          action={{
+            label: 'OK',
+            onPress: () => {
+              // Do something when OK is pressed
+            },
+            textColor: 'white', // Set the text color to white
+          }}
+          style={[styles.snackbar, {backgroundColor: snackbarBackgroundColor}]}>
+          {snackbarText}
+        </Snackbar>
       </View>
     </View>
   );
@@ -315,8 +354,8 @@ const styles = StyleSheet.create({
     elevation: 4,
     // textColor property sets the text color of the Snackbar label
     textColor: 'white',
-    fontWeight:600,
-    marginBottom:-55
+    fontWeight: 600,
+    marginBottom: -55,
   },
 });
 
