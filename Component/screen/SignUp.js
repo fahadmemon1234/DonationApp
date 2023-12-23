@@ -97,9 +97,14 @@ import {GoogleSignin} from '@react-native-google-signin/google-signin';
       const googleCredentials = auth.GoogleAuthProvider.credential(idToken);
       await auth().signInWithCredential(googleCredentials);
 
-      setSnackbarText('Google SignIn successfully!');
+      setSnackbarText('SignIn successfully!');
       setSnackbarVisible(true);
       setSnackbarBackgroundColor('green');
+
+
+      setTimeout(() => {
+        navigation.navigate('Home');
+      }, 5000);
       // await navigation.navigate('Home');
       // await navigation.navigate("MyDrawer")
       // await navigation.navigate('BottomNav');
