@@ -86,7 +86,7 @@ export default function BottomTab() {
           name="title1"
           position="LEFT"
           component={() => <Screen1 />}
-          options={{ headerShown: false }}
+          options={{ headerShown: false, showLabel: false }}
         />
         <CurvedBottomBarExpo.Screen
           name="title3"

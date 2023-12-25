@@ -33,7 +33,8 @@ const LogIn = ({navigation}) => {
         setSnackbarText('Please Enter Password');
         setSnackbarVisible(true);
         setSnackbarBackgroundColor('red');
-      } else {
+      } 
+      else if (email && password) {
         console.log(email, password);
         await auth().signInWithEmailAndPassword(email, password);
         console.log('User signed in successfully!');
@@ -54,6 +55,12 @@ const LogIn = ({navigation}) => {
         // await navigation.navigate("NextScreen");
         setEmail('');
         setPassword('');
+      }
+
+      else{
+        setSnackbarText('Enter Valid Email & Password');
+        setSnackbarVisible(true);
+        setSnackbarBackgroundColor('red');
       }
     } catch (error) {
       if (error.code === 'auth/user-not-found') {
@@ -120,7 +127,7 @@ const LogIn = ({navigation}) => {
 
     setTimeout(() => {
         navigation.navigate('BottomTab');
-      }, 5000);
+      }, 3000);
       // await navigation.navigate('Home');
       // await navigation.navigate("MyDrawer")
       // await navigation.navigate('BottomNav');

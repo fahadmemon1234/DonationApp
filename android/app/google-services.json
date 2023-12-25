@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "68252012065",
+    "firebase_url": "https://donation-app-123-default-rtdb.firebaseio.com",
     "project_id": "donation-app-123",
     "storage_bucket": "donation-app-123.appspot.com"
   },
