@@ -10,7 +10,7 @@ import {
 import {ref, onValue} from 'firebase/database';
 import {db} from '../../Config/Config/firebase';
 import Heart from 'react-native-vector-icons/AntDesign';
-import Bookmark from 'react-native-vector-icons/Feather';
+import Bookmark from 'react-native-vector-icons/FontAwesome';
 import moment from 'moment';
 
 const Home = ({navigation}) => {
@@ -45,11 +45,25 @@ const Home = ({navigation}) => {
     setShowFullText(!showFullText);
   };
 
-  const [isLiked, setIsLiked] = useState(false);
-  const toggleLike = () => {
-    setIsLiked(!isLiked);
+  const [likes, setLikes] = useState([]);
+
+  const toggleLike = index => {
+    setLikes(prevLikes => {
+      const newLikes = [...prevLikes];
+      newLikes[index] = !newLikes[index];
+      return newLikes;
+    });
   };
 
+  const [isBookmarked, setBookmarked] = useState([]);
+
+  const handleBookmarkClick = index => {
+    setBookmarked(prevLikes => {
+      const newLikes = [...prevLikes];
+      newLikes[index] = !newLikes[index];
+      return newLikes;
+    });
+  };
   return (
     <>
       <ScrollView>
@@ -76,21 +90,25 @@ const Home = ({navigation}) => {
 
             <View style={styles.btns}>
               <View style={styles.leftBtns}>
-              <TouchableOpacity onPress={toggleLike}>
-                <Heart
-                  name={isLiked ? 'heart' : 'hearto'}
-                  size={25}
-                  color={isLiked ? 'red' : 'black'}
-                />
+                <TouchableOpacity key={index} onPress={() => toggleLike(index)}>
+                  <Heart
+                    name={likes[index] ? 'heart' : 'hearto'}
+                    size={25}
+                    color={likes[index] ? 'red' : 'black'}
+                  />
                 </TouchableOpacity>
               </View>
               <View>
-                <Bookmark name="bookmark" size={25} color="black" />
+                <TouchableOpacity onPress={() => handleBookmarkClick(index)}>
+                  <Bookmark
+                    name={isBookmarked[index] ? 'bookmark' : 'bookmark-o'}
+                    size={25}
+                    color={isBookmarked[index] ? 'orange' : 'black'}
+                  />
+                </TouchableOpacity>
                 {/* <Image source={require('./bookmark.png')} style={styles.icon} /> */}
               </View>
             </View>
-
-            <Text style={styles.likes}>5,489 likes</Text>
 
             <Text style={styles.message}>
               <Text style={styles.boldText}>SWIT: </Text>
@@ -114,6 +132,7 @@ const Home = ({navigation}) => {
             </Text>
           </View>
         ))}
+        <View style={styles.bottomSpace} />
       </ScrollView>
     </>
   );
@@ -261,6 +280,10 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontWeight: '500',
     color: '#777',
+  },
+
+  bottomSpace: {
+    height: 100, // Adjust as needed
   },
 });
 

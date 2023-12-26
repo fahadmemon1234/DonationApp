@@ -127,7 +127,7 @@ const LogIn = ({navigation}) => {
 
     setTimeout(() => {
         navigation.navigate('BottomTab');
-      }, 3000);
+      }, 2000);
       // await navigation.navigate('Home');
       // await navigation.navigate("MyDrawer")
       // await navigation.navigate('BottomNav');
