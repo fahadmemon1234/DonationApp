@@ -1,16 +1,21 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   Alert,
   Animated,
   StyleSheet,
   TouchableOpacity,
   View,
+  Text,
 } from 'react-native';
-import { CurvedBottomBarExpo } from 'react-native-curved-bottom-bar';
+import {CurvedBottomBarExpo} from 'react-native-curved-bottom-bar';
 import Ionicons from 'react-native-vector-icons/AntDesign';
-
 import Home from '../../Component/screen/Home';
-
+import Modal from 'react-native-modal';
+import {Picker} from '@react-native-picker/picker';
+import {TextInput, Snackbar, Icon} from 'react-native-paper';
+import {db} from '../Config/firebase';
+import {ref, push, set} from 'firebase/database';
+import Cancel from 'react-native-vector-icons/FontAwesome';
 
 const Screen1 = () => {
   return <Home />;
@@ -21,6 +26,87 @@ const Screen2 = () => {
 };
 
 export default function BottomTab() {
+  const [isModalVisible, setModalVisible] = useState(false);
+
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarText, setSnackbarText] = useState('');
+  const [snackbarBackgroundColor, setSnackbarBackgroundColor] = useState('');
+
+  const currentDate = new Date(); // Get the current date and time
+  const formattedDate = currentDate.toLocaleDateString(); // Get only the date portion
+  const currentTime = currentDate.toLocaleTimeString();
+
+  const handleButtonPress = () => {
+    setText('');
+    setDescription('');
+    setselectedDonation('');
+    setSnackbarVisible(false);
+    setSelectedOption('');
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
+
+  const [selectedOption, setSelectedOption] = useState('');
+
+  const handleOptionChange = value => {
+    setSelectedOption(value);
+  };
+
+  const [selectedDonation, setselectedDonation] = useState('');
+
+  const handleDonation = value => {
+    setselectedDonation(value);
+  };
+
+  const [text, setText] = useState('');
+  const [Description, setDescription] = useState('');
+
+  const handleSave = async () => {
+    try {
+      if (text !== '' && selectedDonation !== '' && Description !== '') {
+        const PostingRef = ref(db, 'Donation'); // Replace 'your-collection' with the desired path
+
+        const newPosting = {
+          name: text || '', // Ensure 'name' is not undefined or null
+          description: Description || '', // Ensure 'description' is not undefined or null
+          donationType: selectedDonation,
+          RequestType: false,
+          createdDate: formattedDate,
+          uploadTime: currentTime,
+        };
+
+        // Push the new data to the database
+        await push(PostingRef, newPosting);
+
+        setSnackbarText('Data inserted successfully');
+        setSnackbarVisible(true);
+        setSnackbarBackgroundColor('green');
+
+        setTimeout(() => {
+          closeModal();
+        }, 3000);
+      } else {
+        setSnackbarText('All Fields is Required');
+        setSnackbarVisible(true);
+        setSnackbarBackgroundColor('red');
+      }
+
+      // Additional actions after data insertion, if needed
+    } catch (error) {
+      console.error('Error inserting data:', error.message);
+      setSnackbarText(`Error: ${error.message}`);
+      setSnackbarVisible(true);
+      setSnackbarBackgroundColor('red');
+    }
+  };
+
+  const onDismissSnackbar = () => {
+    setSnackbarVisible(false);
+  };
+
   const _renderIcon = (routeName, selectedTab) => {
     let icon = '';
 
@@ -31,13 +117,12 @@ export default function BottomTab() {
       case 'title2':
         icon = 'info';
         break;
-        case "title3":
-        icon= "setting";
-        break
-        case "title4":
-        icon = "wechat"
-        break
-
+      case 'title3':
+        icon = 'setting';
+        break;
+      case 'title4':
+        icon = 'wechat';
+        break;
     }
 
     return (
@@ -48,19 +133,18 @@ export default function BottomTab() {
       />
     );
   };
-  const renderTabBar = ({ routeName, selectedTab, navigate }) => {
+  const renderTabBar = ({routeName, selectedTab, navigate}) => {
     return (
       <TouchableOpacity
         onPress={() => navigate(routeName)}
-        style={styles.tabbarItem}
-      >
+        style={styles.tabbarItem}>
         {_renderIcon(routeName, selectedTab)}
       </TouchableOpacity>
     );
   };
 
   return (
-   
+    <>
       <CurvedBottomBarExpo.Navigator
         type="DOWN"
         style={styles.bottomBar}
@@ -70,44 +154,172 @@ export default function BottomTab() {
         bgColor="white"
         initialRouteName="title1"
         borderTopLeftRight
-        renderCircle={({ selectedTab, navigate }) => (
+        renderCircle={({selectedTab, navigate}) => (
           <Animated.View style={styles.btnCircleUp}>
             <TouchableOpacity
               style={styles.button}
-              onPress={() => Alert.alert('Click Action')}
-            >
+              onPress={() => handleButtonPress()}>
               <Ionicons name={'pluscircle'} color="gray" size={25} />
             </TouchableOpacity>
           </Animated.View>
         )}
-        tabBar={renderTabBar}
-      >
+        tabBar={renderTabBar}>
         <CurvedBottomBarExpo.Screen
           name="title1"
           position="LEFT"
           component={() => <Screen1 />}
-          options={{ headerShown: false, showLabel: false }}
+          options={{headerShown: false, showLabel: false}}
         />
         <CurvedBottomBarExpo.Screen
           name="title3"
           position="LEFT"
           component={() => <Screen1 />}
-          options={{ headerShown: false }}
+          options={{headerShown: false}}
         />
-         <CurvedBottomBarExpo.Screen
+        <CurvedBottomBarExpo.Screen
           name="title4"
           component={() => <Screen2 />}
-          options={{ headerShown: false }}
+          options={{headerShown: false}}
           position="RIGHT"
         />
         <CurvedBottomBarExpo.Screen
           name="title2"
           component={() => <Screen2 />}
-          options={{ headerShown: false }}
+          options={{headerShown: false}}
           position="RIGHT"
         />
       </CurvedBottomBarExpo.Navigator>
-  
+
+      <Modal isVisible={isModalVisible} onBackdropPress={closeModal}>
+
+
+        <View style={styles.modalContent}>
+
+<TouchableOpacity onPress={closeModal}>
+        <View style={{alignSelf:'flex-end'}}>
+<Cancel name="times" size={30} color="red" />
+</View>
+</TouchableOpacity>
+
+          {selectedOption !== 'form' && (
+
+            <View>
+ <Text style={{fontWeight: '600', color: 'black', fontSize: 30, marginBottom:15}}>
+                Choose Type:
+              </Text>
+
+            <Picker
+              selectedValue={selectedOption}
+              onValueChange={value => handleOptionChange(value)}
+              style={styles.picker}
+              iconStyle={{color: 'black'}}>
+              <Picker.Item label="Select Option" value="" />
+              <Picker.Item label="Form" value="form" />
+              <Picker.Item label="Request" value="request" />
+            </Picker>
+            </View>
+          )}
+
+          {selectedOption === 'form' && (
+            <View>
+              <Text style={{fontWeight: '600', color: 'black', fontSize: 30}}>
+                Donation Foam
+              </Text>
+
+              <Text
+                style={{
+                  color: 'black',
+                  marginTop: 20,
+                  marginBottom: -10,
+                  fontWeight: '700',
+                }}>
+                Donation: <Text style={styles.requiredAsterisk}>*</Text>
+              </Text>
+              <Picker
+                selectedValue={selectedDonation}
+                onValueChange={value => handleDonation(value)}
+                style={[styles.picker, {marginTop: 20}]}
+                iconStyle={{color: 'black'}}>
+                <Picker.Item label="Select Donation" value="" />
+                <Picker.Item label="Food" value="Food" />
+                <Picker.Item label="Money" value="Money" />
+                <Picker.Item label="Bike" value="Bike" />
+                <Picker.Item label="AutoRikshaw" value="AutoRikshaw" />
+                <Picker.Item label="Car" value="Car" />
+                <Picker.Item label="House" value="House" />
+                <Picker.Item label="ElectronicItem" value="ElectronicItem" />
+              </Picker>
+
+              <Text
+                style={{
+                  color: 'black',
+                  marginTop: 20,
+                  marginBottom: -10,
+                  fontWeight: '700',
+                }}>
+                Name: <Text style={styles.requiredAsterisk}>*</Text>
+              </Text>
+              <TextInput
+                label="Your Name"
+                value={text}
+                style={[styles.text, {marginTop: 20}]}
+                onChangeText={text => setText(text)}
+              />
+
+              <Text
+                style={{
+                  color: 'black',
+                  marginTop: 20,
+                  marginBottom: -10,
+                  fontWeight: '700',
+                }}>
+                Description: <Text style={styles.requiredAsterisk}>*</Text>
+              </Text>
+              <TextInput
+                label="Description"
+                value={Description}
+                multiline
+                numberOfLines={4}
+                style={styles.description}
+                onChangeText={text => setDescription(text)}
+              />
+
+              <View
+                style={{
+                  marginTop: 20,
+                  flexDirection: 'row',
+                  alignSelf: 'flex-end',
+                }}>
+                <TouchableOpacity style={styles.buttons} onPress={handleSave}>
+                  <Text style={styles.buttonText}>Save</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.Cancel} onPress={closeModal}>
+                  <Text style={styles.buttonText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
+
+          <Snackbar
+            visible={snackbarVisible}
+            onDismiss={onDismissSnackbar}
+            action={{
+              label: 'OK',
+              onPress: () => {
+                // Do something when OK is pressed
+              },
+              textColor: 'white', // Set the text color to white
+            }}
+            style={[
+              styles.snackbar,
+              {backgroundColor: snackbarBackgroundColor},
+            ]}>
+            {snackbarText}
+          </Snackbar>
+        </View>
+        {/* Add more content as needed */}
+      </Modal>
+    </>
   );
 }
 
@@ -168,5 +380,83 @@ export const styles = StyleSheet.create({
   screen2: {
     flex: 1,
     backgroundColor: '#FFEBCD',
+  },
+  modalContent: {
+    backgroundColor: 'white', // Set the background color to white
+    padding: 50,
+    borderRadius: 10,
+    width: '100%', // Adjust the width as needed
+    alignSelf: 'center', // Center the modal
+    color: 'black',
+  },
+  row: {
+    flexDirection: 'row',
+  },
+  column: {
+    flex: 1,
+    marginHorizontal: 5,
+    // Add any additional styles for the column if needed
+  },
+  picker: {
+    height: 40,
+    backgroundColor: 'lightgrey',
+    borderColor: 'green',
+    borderWidth: 2,
+    color: 'black',
+  },
+
+  description: {
+    marginTop: 20,
+    height: 100, // Adjust the height as needed
+    borderWidth: 1,
+    borderColor: 'green',
+    backgroundColor: 'transparent',
+    paddingHorizontal: 10,
+  },
+
+  text: {
+    borderWidth: 1,
+    borderColor: 'green',
+    backgroundColor: 'transparent',
+    paddingHorizontal: 10,
+    borderRadius: 10,
+  },
+
+  pickerContainer: {
+    height: 40,
+    marginTop: 20,
+  },
+  pickers: {
+    backgroundColor: 'white',
+    borderColor: 'black',
+    borderWidth: 2,
+  },
+  pickerItem: {
+    justifyContent: 'flex-start',
+  },
+  dropDown: {
+    backgroundColor: 'white',
+    borderColor: 'black',
+    borderWidth: 2,
+  },
+
+  buttons: {
+    backgroundColor: 'green', // Set the background color
+    padding: 10,
+    borderRadius: 5,
+  },
+  Cancel:{
+    backgroundColor: 'red', // Set the background color
+    padding: 10,
+    borderRadius: 5,
+    marginLeft:5
+  },
+  buttonText: {
+    color: 'white', // Set the text color
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  requiredAsterisk: {
+    color: 'red',
   },
 });

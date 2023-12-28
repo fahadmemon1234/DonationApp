@@ -104,7 +104,7 @@ import {GoogleSignin} from '@react-native-google-signin/google-signin';
 
       setTimeout(() => {
         navigation.navigate('Home');
-      }, 5000);
+      }, 1000);
       // await navigation.navigate('Home');
       // await navigation.navigate("MyDrawer")
       // await navigation.navigate('BottomNav');
