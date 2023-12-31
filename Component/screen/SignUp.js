@@ -50,7 +50,7 @@ import {GoogleSignin} from '@react-native-google-signin/google-signin';
         setSnackbarBackgroundColor('green');
   
         setTimeout(() => {
-          navigation.navigate('LogIn');
+          navigation.navigate('Login');
         }, 5000);
   
         setEmail('');
@@ -103,7 +103,7 @@ import {GoogleSignin} from '@react-native-google-signin/google-signin';
 
 
       setTimeout(() => {
-        navigation.navigate('Home');
+        navigation.navigate('BottomTab');
       }, 1000);
       // await navigation.navigate('Home');
       // await navigation.navigate("MyDrawer")

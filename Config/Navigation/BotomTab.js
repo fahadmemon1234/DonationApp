@@ -16,13 +16,19 @@ import {TextInput, Snackbar, Icon} from 'react-native-paper';
 import {db} from '../Config/firebase';
 import {ref, push, set} from 'firebase/database';
 import Cancel from 'react-native-vector-icons/FontAwesome';
+import Videos from '../../Component/screen/Video';
+import Setting from '../../Component/screen/Setting';
 
 const Screen1 = () => {
   return <Home />;
 };
 
 const Screen2 = () => {
-  return <View style={styles.screen2} />;
+  return <Videos />;
+};
+
+const Screen3 = () => {
+  return <Setting />;
 };
 
 export default function BottomTab() {
@@ -103,6 +109,49 @@ export default function BottomTab() {
     }
   };
 
+
+
+
+
+const handleSaveRequest = async() =>{
+  try {
+    if (text !== '' && Description !== '') {
+      const PostingRef = ref(db, 'Request'); // Replace 'your-collection' with the desired path
+
+      const newPosting = {
+        name: text || '', // Ensure 'name' is not undefined or null
+        description: Description || '', // Ensure 'description' is not undefined or null
+        RequestType: '',
+        createdDate: formattedDate,
+        uploadTime: currentTime,
+      };
+
+      // Push the new data to the database
+      await push(PostingRef, newPosting);
+
+      setSnackbarText('Data inserted successfully');
+      setSnackbarVisible(true);
+      setSnackbarBackgroundColor('green');
+
+      setTimeout(() => {
+        closeModal();
+      }, 3000);
+    } else {
+      setSnackbarText('All Fields is Required');
+      setSnackbarVisible(true);
+      setSnackbarBackgroundColor('red');
+    }
+
+    // Additional actions after data insertion, if needed
+  } catch (error) {
+    console.error('Error inserting data:', error.message);
+    setSnackbarText(`Error: ${error.message}`);
+    setSnackbarVisible(true);
+    setSnackbarBackgroundColor('red');
+  }
+}
+
+
   const onDismissSnackbar = () => {
     setSnackbarVisible(false);
   };
@@ -111,17 +160,17 @@ export default function BottomTab() {
     let icon = '';
 
     switch (routeName) {
-      case 'title1':
+      case 'Home':
         icon = 'home';
         break;
-      case 'title2':
-        icon = 'info';
-        break;
-      case 'title3':
+      case 'Setting':
         icon = 'setting';
         break;
-      case 'title4':
-        icon = 'wechat';
+      case 'Video':
+        icon = 'videocamera';
+        break;
+      case 'Profile':
+        icon = 'profile';
         break;
     }
 
@@ -129,7 +178,7 @@ export default function BottomTab() {
       <Ionicons
         name={icon}
         size={25}
-        color={routeName === selectedTab ? 'red' : 'blue'}
+        color={routeName === selectedTab ? 'green' : 'black'}
       />
     );
   };
@@ -165,25 +214,25 @@ export default function BottomTab() {
         )}
         tabBar={renderTabBar}>
         <CurvedBottomBarExpo.Screen
-          name="title1"
+          name="Home"
           position="LEFT"
           component={() => <Screen1 />}
           options={{headerShown: false, showLabel: false}}
         />
         <CurvedBottomBarExpo.Screen
-          name="title3"
+          name="Video"
           position="LEFT"
-          component={() => <Screen1 />}
+          component={() => <Screen2 />}
           options={{headerShown: false}}
         />
         <CurvedBottomBarExpo.Screen
-          name="title4"
-          component={() => <Screen2 />}
+          name="Setting"
+          component={() => <Screen3 />}
           options={{headerShown: false}}
           position="RIGHT"
         />
         <CurvedBottomBarExpo.Screen
-          name="title2"
+          name="Profile"
           component={() => <Screen2 />}
           options={{headerShown: false}}
           position="RIGHT"
@@ -191,32 +240,34 @@ export default function BottomTab() {
       </CurvedBottomBarExpo.Navigator>
 
       <Modal isVisible={isModalVisible} onBackdropPress={closeModal}>
-
-
         <View style={styles.modalContent}>
+          <TouchableOpacity onPress={closeModal}>
+            <View style={{alignSelf: 'flex-end'}}>
+              <Cancel name="times" size={30} color="red" />
+            </View>
+          </TouchableOpacity>
 
-<TouchableOpacity onPress={closeModal}>
-        <View style={{alignSelf:'flex-end'}}>
-<Cancel name="times" size={30} color="red" />
-</View>
-</TouchableOpacity>
-
-          {selectedOption !== 'form' && (
-
+          {selectedOption !== 'form' && selectedOption !== 'request' && (
             <View>
- <Text style={{fontWeight: '600', color: 'black', fontSize: 30, marginBottom:15}}>
+              <Text
+                style={{
+                  fontWeight: '600',
+                  color: 'black',
+                  fontSize: 30,
+                  marginBottom: 15,
+                }}>
                 Choose Type:
               </Text>
 
-            <Picker
-              selectedValue={selectedOption}
-              onValueChange={value => handleOptionChange(value)}
-              style={styles.picker}
-              iconStyle={{color: 'black'}}>
-              <Picker.Item label="Select Option" value="" />
-              <Picker.Item label="Form" value="form" />
-              <Picker.Item label="Request" value="request" />
-            </Picker>
+              <Picker
+                selectedValue={selectedOption}
+                onValueChange={value => handleOptionChange(value)}
+                style={styles.picker}
+                iconStyle={{color: 'black'}}>
+                <Picker.Item label="Select Option" value="" />
+                <Picker.Item label="Form" value="form" />
+                <Picker.Item label="Request" value="request" />
+              </Picker>
             </View>
           )}
 
@@ -291,6 +342,62 @@ export default function BottomTab() {
                   alignSelf: 'flex-end',
                 }}>
                 <TouchableOpacity style={styles.buttons} onPress={handleSave}>
+                  <Text style={styles.buttonText}>Save</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.Cancel} onPress={closeModal}>
+                  <Text style={styles.buttonText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
+
+          {selectedOption === 'request' && (
+            <View>
+              <Text style={{color: 'black', fontWeight: '600', fontSize: 30}}>
+                My Request
+              </Text>
+
+              <Text
+                style={{
+                  color: 'black',
+                  marginTop: 20,
+                  marginBottom: -10,
+                  fontWeight: '700',
+                }}>
+                Name: <Text style={styles.requiredAsterisk}>*</Text>
+              </Text>
+              <TextInput
+                label="Your Name"
+                value={text}
+                style={[styles.text, {marginTop: 20}]}
+                onChangeText={text => setText(text)}
+              />
+
+              <Text
+                style={{
+                  color: 'black',
+                  marginTop: 20,
+                  marginBottom: -10,
+                  fontWeight: '700',
+                }}>
+                Description: <Text style={styles.requiredAsterisk}>*</Text>
+              </Text>
+              <TextInput
+                label="Description"
+                value={Description}
+                multiline
+                numberOfLines={4}
+                style={styles.description}
+                onChangeText={text => setDescription(text)}
+              />
+
+              <View
+                style={{
+                  marginTop: 20,
+                  flexDirection: 'row',
+                  alignSelf: 'flex-end',
+                }}>
+                <TouchableOpacity style={styles.buttons} onPress={handleSaveRequest}>
                   <Text style={styles.buttonText}>Save</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.Cancel} onPress={closeModal}>
@@ -445,11 +552,11 @@ export const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
   },
-  Cancel:{
+  Cancel: {
     backgroundColor: 'red', // Set the background color
     padding: 10,
     borderRadius: 5,
-    marginLeft:5
+    marginLeft: 5,
   },
   buttonText: {
     color: 'white', // Set the text color
