@@ -16,7 +16,7 @@ import {TextInput, Snackbar, Icon} from 'react-native-paper';
 import {db} from '../Config/firebase';
 import {ref, push, set} from 'firebase/database';
 import Cancel from 'react-native-vector-icons/FontAwesome';
-import Videos from '../../Component/screen/Video';
+import VideoPost from '../../Component/screen/Video';
 import Setting from '../../Component/screen/Setting';
 
 const Screen1 = () => {
@@ -24,7 +24,7 @@ const Screen1 = () => {
 };
 
 const Screen2 = () => {
-  return <Videos />;
+  return <VideoPost />;
 };
 
 const Screen3 = () => {

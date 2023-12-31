@@ -15,6 +15,10 @@ const handleTerms = () =>{
     Navigation.navigate('Term');
 }
 
+const handlePivacy = () =>{
+  Navigation.navigate('PrivacyPolicy');
+}
+
   return (
     <View style={styles.container}>
         <TouchableOpacity style={styles.button} onPress={handleAbout}>
@@ -25,7 +29,7 @@ const handleTerms = () =>{
           <Text style={styles.buttonText}>Terms & Condition</Text>
         </TouchableOpacity>
         <View style={{padding:10}}></View>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={handlePivacy}>
           <Text style={styles.buttonText}>Privacy Policy</Text>
         </TouchableOpacity>
     </View>

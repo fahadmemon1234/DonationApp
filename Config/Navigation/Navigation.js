@@ -6,10 +6,11 @@ import SignUp from '../../Component/screen/SignUp';
 import LogIn from '../../Component/screen/LogIn';
 import Home from '../../Component/screen/Home';
 import BottomTab from './BotomTab';
-import Videos from '../../Component/screen/Video';
+import VideoPost from '../../Component/screen/Video';
 import Setting from '../../Component/screen/Setting';
 import About from '../../Component/screen/About';
 import TermsCondition from '../../Component/screen/Terms';
+import PrivacyPolicy from '../../Component/screen/Privacy';
 
 const Stack = createNativeStackNavigator();
 
@@ -44,8 +45,8 @@ const Navigation = () => {
             options={{headerShown: false}}
           />
           <Stack.Screen
-            name="Videos"
-            component={Videos}
+            name="Video"
+            component={VideoPost}
             options={{headerShown: false}}
           />
            <Stack.Screen
@@ -61,6 +62,11 @@ const Navigation = () => {
           <Stack.Screen
             name="Term"
             component={TermsCondition}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="Privacy"
+            component={PrivacyPolicy}
             options={{headerShown: false}}
           />
         </Stack.Navigator>
