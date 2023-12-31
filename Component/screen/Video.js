@@ -92,7 +92,7 @@ function VideoPost() {
                   style={styles.imgBg}
                   resizeMode="cover"
                   controls={true}
-                  muted={true} // Set the muted prop to true
+                  muted={true}
                   onError={error => console.error('Video Error:', error)}
                 />
               ) : (

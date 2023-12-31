@@ -18,6 +18,7 @@ import {ref, push, set} from 'firebase/database';
 import Cancel from 'react-native-vector-icons/FontAwesome';
 import VideoPost from '../../Component/screen/Video';
 import Setting from '../../Component/screen/Setting';
+import ProfileSet from '../../Component/screen/Profile';
 
 const Screen1 = () => {
   return <Home />;
@@ -29,6 +30,9 @@ const Screen2 = () => {
 
 const Screen3 = () => {
   return <Setting />;
+};
+const Screen4 = () => {
+  return <ProfileSet />;
 };
 
 export default function BottomTab() {
@@ -233,7 +237,7 @@ const handleSaveRequest = async() =>{
         />
         <CurvedBottomBarExpo.Screen
           name="Profile"
-          component={() => <Screen2 />}
+          component={() => <Screen4 />}
           options={{headerShown: false}}
           position="RIGHT"
         />

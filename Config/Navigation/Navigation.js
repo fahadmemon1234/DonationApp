@@ -11,6 +11,7 @@ import Setting from '../../Component/screen/Setting';
 import About from '../../Component/screen/About';
 import TermsCondition from '../../Component/screen/Terms';
 import PrivacyPolicy from '../../Component/screen/Privacy';
+import ProfileSet from '../../Component/screen/Profile';
 
 const Stack = createNativeStackNavigator();
 
@@ -67,6 +68,11 @@ const Navigation = () => {
           <Stack.Screen
             name="Privacy"
             component={PrivacyPolicy}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="Profile"
+            component={ProfileSet}
             options={{headerShown: false}}
           />
         </Stack.Navigator>
