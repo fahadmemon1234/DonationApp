@@ -16,7 +16,7 @@ const handleTerms = () =>{
 }
 
 const handlePivacy = () =>{
-  Navigation.navigate('PrivacyPolicy');
+  Navigation.navigate('Privacy');
 }
 
   return (
